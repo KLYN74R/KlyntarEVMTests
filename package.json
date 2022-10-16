@@ -1,0 +1,29 @@
+{
+  "name": "kly_evm",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ethereumjs/block": "^4.0.0",
+    "@ethereumjs/blockchain": "^6.0.0",
+    "@ethereumjs/common": "^3.0.0",
+    "@ethereumjs/evm": "^1.0.0",
+    "@ethereumjs/rlp": "^4.0.0",
+    "@ethereumjs/statemanager": "^1.0.0",
+    "@ethereumjs/trie": "^5.0.0",
+    "@ethereumjs/tx": "^4.0.0",
+    "@ethereumjs/util": "^8.0.0",
+    "@ethereumjs/vm": "^6.0.0",
+    "@ethersproject/abi": "^5.7.0",
+    "level": "^8.0.0",
+    "solc": "^0.8.17",
+    "web3": "^1.8.0"
+  }
+}
