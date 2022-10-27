@@ -67,6 +67,7 @@ let deployContract=async(vm,senderPrivateKey,deploymentBytecode)=>{
 
   const deploymentResult = await vm.runTx({ tx,block }).catch(e=>console.log(e))
 
+  console.log('Deployment result is ',deploymentResult)
 
   if (deploymentResult.execResult.exceptionError) {
 
@@ -96,6 +97,8 @@ async function makeCheckpoint(vm,senderPrivateKey,contractAddress,aggregatedChec
   }
 
   const tx = Transaction.fromTxData(buildTransaction(txData), { common }).sign(senderPrivateKey)
+
+  console.log(tx)
 
   const setGreetingResult = await vm.runTx({ tx , block})
 
