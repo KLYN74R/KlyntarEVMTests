@@ -44,12 +44,13 @@ const common = new Common({ chain: Chain.Rinkeby, hardfork: Hardfork.Istanbul })
 
 
 //Just empty
-const block = Block.fromBlockData({ header: { extraData: Buffer.alloc(97), timestamp:133713371337 } }, { common })
+const block = Block.fromBlockData({ header: { miner:'0x0000000000000000000000000000000000000000', extraData: Buffer.alloc(97), timestamp:133713371337 } }, { common })
 
 
 async function payment(vm,from,to,value,senderPrivateKey,isJustRunCall) {
 
     let txObj = {
+        from,
         to,
         value,
         nonce:await getAccountNonce(vm,senderPrivateKey)
@@ -101,7 +102,7 @@ async function main() {
 
     console.log('Make transaction...')
 
-    let result = await payment(vm,accountAddress,Address.fromString('0x4741c39e6096c192Db6E1375Ff32526512069dF5'),1337,accountPk)
+    let result = await payment(vm,accountAddress,Address.fromString('0x4741c39e6096c192Db6E1375Ff32526512069dF5'),'0xffffffffffffff',accountPk,false)
 
     const recepientAccount = await vm.stateManager.getAccount(Address.fromString('0x4741c39e6096c192Db6E1375Ff32526512069dF5'))
 
@@ -111,6 +112,7 @@ async function main() {
     console.log(senderAccount)  
 
     console.log(await vm.stateManager.getAccount(Address.fromString('0x407d73d8a49eeb85d32cf465507dd71d507100c1')))
+    console.log(await vm.stateManager.getAccount(Address.fromString('0x0000000000000000000000000000000000000000')))
 
 }
 
