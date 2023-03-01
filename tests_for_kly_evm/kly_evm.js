@@ -25,7 +25,7 @@ global.__dirname = await import('path').then(async mod=>
 const INITIAL_GREETING = 'Hello, World!'
 const SECOND_GREETING = 'Hola, Mundo!'
 
-const common = new Common({ chain: Chain.Rinkeby, hardfork: Hardfork.Istanbul })
+const common = new Common({chain: Chain.Rinkeby, hardfork: Hardfork.Istanbul})
 
 
 const gethDbPath = '../DATABASES/KLY_EVM' // Add your own path here. It will get modified, see remarks.
