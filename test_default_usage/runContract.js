@@ -5,8 +5,8 @@ import { Address } from '@ethereumjs/util'
 import { Chain, Common, Hardfork } from '@ethereumjs/common'
 import { Transaction } from '@ethereumjs/tx'
 import { VM } from '@ethereumjs/vm'
-import { buildTransaction, encodeDeployment, encodeFunction } from './helpers/tx-builder.js'
-import { getAccountNonce, insertAccount } from './helpers/account-utils.js'
+import { buildTransaction, encodeDeployment, encodeFunction } from '../helpers/tx-builder.js'
+import { getAccountNonce, insertAccount } from '../helpers/account-utils.js'
 import { Block } from '@ethereumjs/block'
 import { Blockchain } from '@ethereumjs/blockchain'
 import {Level} from 'level'
@@ -33,7 +33,7 @@ const SECOND_GREETING = 'Hola, Mundo!'
 const common = new Common({ chain: Chain.Rinkeby, hardfork: Hardfork.Istanbul })
 
 
-const gethDbPath = './RUN' // Add your own path here. It will get modified, see remarks.
+const gethDbPath = '../DATABASES/RUN' // Add your own path here. It will get modified, see remarks.
 
 
 const db = new Level(gethDbPath)
@@ -135,6 +135,7 @@ let deployContract=async(vm,senderPrivateKey,deploymentBytecode,greeting)=>{
 
   console.log('TX IS ',tx)
 
+
   const deploymentResult = await vm.runTx({ tx, block })
 
   if (deploymentResult.execResult.exceptionError) {
@@ -218,7 +219,7 @@ async function main() {
   
   console.log('Deploying the contract...')
 
-  const contractAddress = await deployContract(vm, accountPk, bytecode, INITIAL_GREETING)
+  const contractAddress = await deployContract(vm,accountPk,bytecode,INITIAL_GREETING)
 
   console.log('Contract address:', contractAddress.toString())
 

@@ -111,7 +111,7 @@ export const testData = {
 // which will ease standalone initialization  
   const common = Common.custom({name:'KLYNTAR',networkId:666666,chainId:666666},'petersburg')
   
-  const gethDbPath = './chaindata' // Add your own path here. It will get modified, see remarks.
+  const gethDbPath = '../DATABASES/chaindata' // Add your own path here. It will get modified, see remarks.
 
   const db = new Level(gethDbPath)
 

@@ -1,7 +1,7 @@
 import {Trie} from '@ethereumjs/trie'
 import { Level } from 'level'
 
-const trie = new Level('./PATRICIA',{valueEncoding:'buffer',keyEncoding:'buffer'})
+const trie = new Level('../DATABASES/PATRICIA',{valueEncoding:'buffer',keyEncoding:'buffer'})
 
 
 // trie.createReadStream().on('data',data=>console.log(data.key.toString('utf8'),' => ',data.value.toString('utf8')))

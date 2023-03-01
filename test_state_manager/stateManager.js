@@ -2,11 +2,11 @@ import {Trie} from '@ethereumjs/trie'
 import { Level } from 'level'
 import { DefaultStateManager } from '@ethereumjs/statemanager'
 import { Account, Address } from '@ethereumjs/util'
-import {LevelDB} from './LevelDB.js'
+import {LevelDB} from '../LevelDB.js'
 
 const trie = new Trie({
     
-    db:new LevelDB(new Level('./STATE')),
+    db:new LevelDB(new Level('../DATABASES/STATE')),
 
     useKeyHashing:true
 

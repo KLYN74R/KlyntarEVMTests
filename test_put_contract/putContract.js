@@ -6,15 +6,15 @@ import { Address,Account } from '@ethereumjs/util'
 import { Chain, Common, Hardfork } from '@ethereumjs/common'
 import { Transaction } from '@ethereumjs/tx'
 import { VM } from '@ethereumjs/vm'
-import { buildTransaction, encodeDeployment, encodeFunction } from './helpers/tx-builder.js'
-import { getAccountNonce, insertAccount } from './helpers/account-utils.js'
+import { buildTransaction, encodeDeployment, encodeFunction } from '../helpers/tx-builder.js'
+import { getAccountNonce, insertAccount } from '../helpers/account-utils.js'
 import { Block } from '@ethereumjs/block'
 
 import { DefaultStateManager } from '@ethereumjs/statemanager'
 
 import {createHash} from 'crypto'
 
-import {LevelDB} from './LevelDB.js'
+import {LevelDB} from '../LevelDB.js'
 
 import rlp from '@ethereumjs/rlp'
 
@@ -32,7 +32,7 @@ global.__dirname = await import('path').then(async mod=>
 
 const trie = new Trie({
     
-    db:new LevelDB(new Level('./PUT_TEST')),
+    db:new LevelDB(new Level('../DATABASES/PUT_TEST')),
 
     useKeyHashing:true
 

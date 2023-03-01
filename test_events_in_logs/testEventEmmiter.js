@@ -4,16 +4,17 @@ import { Level } from 'level'
 import { defaultAbiCoder as AbiCoder, Interface } from '@ethersproject/abi'
 import { Address } from '@ethereumjs/util'
 import { Chain, Common, Hardfork } from '@ethereumjs/common'
+
 import { Transaction } from '@ethereumjs/tx'
 import { VM } from '@ethereumjs/vm'
-import { buildTransaction, encodeDeployment, encodeFunction } from './helpers/tx-builder.js'
-import { getAccountNonce, insertAccount } from './helpers/account-utils.js'
+import { buildTransaction, encodeDeployment, encodeFunction } from '../helpers/tx-builder.js'
+import { getAccountNonce, insertAccount } from '../helpers/account-utils.js'
 import { Block } from '@ethereumjs/block'
 
 import { DefaultStateManager } from '@ethereumjs/statemanager'
 
 
-import {LevelDB} from './LevelDB.js'
+import {LevelDB} from '../LevelDB.js'
 
 import Web3 from 'web3'
 
@@ -32,7 +33,7 @@ let web3 = new Web3();
 
 const trie = new Trie({
     
-    db:new LevelDB(new Level('./EVENT_EMMITER')),
+    db:new LevelDB(new Level('../DATABASES/TEST_DB_EVENT_EMMITER')),
 
     useKeyHashing:true
 
@@ -42,15 +43,18 @@ const trie = new Trie({
 const INITIAL_GREETING = 'Hello, World!'
 const SECOND_GREETING = 'Hola, Mundo!'
 
-const common = new Common({ chain: Chain.Rinkeby, hardfork: Hardfork.Istanbul })
+const common = Common.custom({chainId:'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',networkId:'0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',hardfork: Hardfork.Istanbul}) //new Common({ chain: Chain.Rinkeby, hardfork: Hardfork.Istanbul })
 
 
 //Just empty
-const block = Block.fromBlockData({ header: { extraData: Buffer.alloc(97), timestamp:133713371337 } }, { common })
+const block = Block.fromBlockData({ header: {timestamp:133713371337 } }, { common })
 
 
 
 let deployContract=async(vm,senderPrivateKey,deploymentBytecode)=>{
+
+
+  // let vmCopy = await vm.copy()
 
   // Contracts are deployed by sending their deployment bytecode to the address 0
   // The contract params should be abi-encoded and appended to the deployment bytecode.
@@ -64,8 +68,13 @@ let deployContract=async(vm,senderPrivateKey,deploymentBytecode)=>{
 
   const tx = Transaction.fromTxData(buildTransaction(txData), { common }).sign(senderPrivateKey)
 
+  await vm.stateManager.checkpoint()
 
-  const deploymentResult = await vm.runTx({ tx,block }).catch(e=>console.log(e))
+  const deploymentResult = await vm.runTx({tx,block}).catch(e=>console.log(e))
+
+  await vm.stateManager.revert()
+
+  // await vm.stateManager.commit()
 
   console.log('Deployment result is ',deploymentResult)
 
@@ -98,13 +107,38 @@ async function makeCheckpoint(vm,senderPrivateKey,contractAddress,aggregatedChec
 
   const tx = Transaction.fromTxData(buildTransaction(txData), { common }).sign(senderPrivateKey)
 
-  console.log(tx)
+  // console.log(tx)
 
-  const setGreetingResult = await vm.runTx({ tx , block})
+  console.log('Balance before call => ',await vm.stateManager.getAccount(Address.fromPrivateKey(senderPrivateKey)))
+
+  console.log('State root before call',(await vm.stateManager.getStateRoot()).toString('hex'))
+
+  const setGreetingResultCall = await vm.evm.runCall({
+  
+    to:contractAddress,
+    data:Buffer.from(data.slice(2),'hex'),
+    block
+  
+  })
+                
+
+  console.log('Balance after .runCall() => ',await vm.stateManager.getAccount(Address.fromPrivateKey(senderPrivateKey)))
+  console.log('State root after call',(await vm.stateManager.getStateRoot()).toString('hex'))
+
+  console.log('===================== SET GREETING RESULT .runCall() ================')
+
+  console.log(setGreetingResultCall)
+
+  console.log('===================== NOW .runTx() ================')
+
+  const setGreetingResult = await vm.runTx({tx,block})
 
 
-  console.log(setGreetingResult)
+  console.log(tx.toJSON())
 
+  console.log('Balance after .runTx() call => ',await vm.stateManager.getAccount(Address.fromPrivateKey(senderPrivateKey)))
+
+  // console.log(setGreetingResultReal)
 
   let ABI = `
 
@@ -125,12 +159,31 @@ async function makeCheckpoint(vm,senderPrivateKey,contractAddress,aggregatedChec
   
 `
 
+console.log('======= PURE RECEIPT IS =========')
+
+console.log('0x'+tx.hash().toString('hex'))
+console.log(tx.isSigned())
+console.log(tx.validate())
+console.log(tx.verifySignature())
+console.log(tx.toJSON())
+console.log(tx.getSenderAddress().toString())
+
+setGreetingResult.receipt.cumulativeBlockGasUsed = web3.utils.toHex(setGreetingResult.receipt.cumulativeBlockGasUsed.toString())
+setGreetingResult.receipt.lalala = 1337
+console.log(JSON.stringify(setGreetingResult.receipt))
+console.log('======= BLOOM IS =======')
+
+console.log(setGreetingResult.receipt.bitvector.toString('hex').length/2)
+
+console.log(setGreetingResult.receipt.logs)
   
   let pureHex = '0x'+setGreetingResult.receipt.logs[0][2].toString('hex'), topicsInHex = setGreetingResult.receipt.logs[0][1].map(x=>'0x'+x.toString('hex'))
 
+  console.log('Contract address of logs is => ','0x'+setGreetingResult.receipt.logs[0][0].toString('hex'))
   console.log(pureHex)
 
   console.log(topicsInHex)
+
 
   console.log(web3.eth.abi.decodeLog(JSON.parse(ABI),pureHex,topicsInHex))
   
@@ -165,9 +218,11 @@ async function main() {
 
     console.log('Account: ', accountAddress.toString())
 
+    console.log('State root before insert account',(await vm.stateManager.getStateRoot()).toString('hex'))
+
     await insertAccount(vm, accountAddress)
 
-    console.log((await vm.stateManager.getStateRoot()).toString('hex'))
+    console.log('State root after insert account and before deploy contract',(await vm.stateManager.getStateRoot()).toString('hex'))
 
     console.log('Compiling...')
 
@@ -176,32 +231,30 @@ async function main() {
 
     console.log('Deploying the contract...')
 
-  const contractAddress = await deployContract(vm,accountPk,bytecode)
+    const contractAddress = await deployContract(vm,accountPk,bytecode)
 
-  console.log('Contract address:', contractAddress.toString())
+    console.log('Contract address:', contractAddress.toString())
 
-  console.log('Init state root ', (await vm.stateManager.getStateRoot()).toString('hex'))
+    console.log('State after contract deploy', (await vm.stateManager.getStateRoot()).toString('hex'))
 
     console.log('Push new checkpoint to hostchain')
 
+    let result = await makeCheckpoint(vm,accountPk,contractAddress,'KLYNTAR CHECKPOINT LALALLALALLALALAAAAAAKLYNTAR CHECKPOINT LALALLALALLALALAAAAAA')
 
-    let result = await makeCheckpoint(vm,accountPk,contractAddress,'KLYNTAR CHECKPOINT LALALLALALLALALAAAAAA')
-
+    console.log('State after checkpoint', (await vm.stateManager.getStateRoot()).toString('hex'))
 
     console.log('Execution result => ',result)
-
-    console.log('State root after checkpoint', (await vm.stateManager.getStateRoot()).toString('hex'))
     
-  const createdAccount = await vm.stateManager.getAccount(contractAddress)
+    const createdAccount = await vm.stateManager.getAccount(contractAddress)
 
-  console.log('-------results-------')
-  console.log('nonce: ' + createdAccount.nonce.toString())
-  console.log('balance in wei: ', createdAccount.balance.toString())
-  console.log('storageRoot: 0x' + createdAccount.storageRoot.toString('hex'))
-  console.log('codeHash: 0x' + createdAccount.codeHash.toString('hex'))
-  console.log('---------------------')
+    console.log('-------results-------')
+    console.log('nonce: ' + createdAccount.nonce.toString())
+    console.log('balance in wei: ', createdAccount.balance.toString())
+    console.log('storageRoot: 0x' + createdAccount.storageRoot.toString('hex'))
+    console.log('codeHash: 0x' + createdAccount.codeHash.toString('hex'))
+    console.log('---------------------')
 
-  console.log('Everything ran correctly!')
+    console.log('Everything ran correctly!')
 
   
 

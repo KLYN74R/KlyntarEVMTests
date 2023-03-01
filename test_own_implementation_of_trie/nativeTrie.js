@@ -1,8 +1,8 @@
 import { Trie } from '@ethereumjs/trie'
-import {LevelDB} from './LevelDB.js'
+import {LevelDB} from '../LevelDB.js'
 import { Level } from 'level'
 
-const trie = new Trie({ db: new LevelDB(new Level('./MY_TRIE_DB_LOCATION')) })
+const trie = new Trie({ db: new LevelDB(new Level('../DATABASES/MY_TRIE_DB_LOCATION')) })
 
 async function test() {
   await trie.put(Buffer.from('test'), Buffer.from('one'))

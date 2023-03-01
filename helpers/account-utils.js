@@ -13,7 +13,7 @@ export const insertAccount = async (vm, address) => {
   }
   const account = Account.fromAccountData(acctData)
 
-  await vm.stateManager.putAccount(address, account).then(()=>console.log('Account putted'))
+  return vm.stateManager.putAccount(address, account)
 
 }
 

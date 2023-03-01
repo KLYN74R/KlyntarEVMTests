@@ -41,7 +41,7 @@ const SECOND_GREETING = 'Hola, Mundo!'
 const common = new Common({ chain: Chain.Rinkeby, hardfork: Hardfork.Istanbul })
 
 
-const gethDbPath = './RUN' // Add your own path here. It will get modified, see remarks.
+const gethDbPath = '../DATABASES/RUN' // Add your own path here. It will get modified, see remarks.
 
 
 const db = new Level(gethDbPath)
@@ -152,7 +152,7 @@ async function main() {
 
   console.log('Put the contract state to VM state manager...')
 
-  await vm.stateManager.putContractStorage(new Address(Buffer.from('61de9dc6f6cff1df2809480882cfd3c2364b28f7','hex')),Buffer.from(CONTRACT_STATE.key,'hex'),Buffer.from(CONTRACT_STATE.value,'hex'))
+  // await vm.stateManager.putContractStorage(new Address(Buffer.from('61de9dc6f6cff1df2809480882cfd3c2364b28f7','hex')),Buffer.from(CONTRACT_STATE.key,'hex'),Buffer.from(CONTRACT_STATE.value,'hex'))
 
   console.log('Init state root ', (await vm.stateManager.getStateRoot()).toString('hex'))
 
