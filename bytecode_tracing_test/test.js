@@ -34,9 +34,7 @@ const block = Block.fromBlockData({ header: { extraData: Buffer.alloc(97),number
 
 const trie = new Trie({
       
-    db:new LevelDB(new Level('DATABASES/STACK_TRACE')),
-
-    useKeyHashing:true
+    db:new LevelDB(new Level('DATABASES/STACK_TRACE'))
 
 })
   
@@ -211,15 +209,6 @@ async function main() {
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
     console.log('Contract code => ',await vm.stateManager.getContractCode(contractAddress))
-
-    // vm.stateManager.
-
-    // await vm.stateManager.dumpStorage(Address.fromString('0x61de9dc6f6cff1df2809480882cfd3c2364b28f7')).then(buf=>console.log(buf))
-
-    // await vm.stateManager.getAccount(Address.fromString('0x61de9dc6f6cff1df2809480882cfd3c2364b28f7')).then(buf=>console.log(buf))
-
-    // await vm.stateManager.getContractStorage(Address.fromString('0x61de9dc6f6cff1df2809480882cfd3c2364b28f7'),Buffer.from('290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563','hex')).then(buf=>console.log(buf))
-
 
 }
 
