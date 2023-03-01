@@ -223,10 +223,11 @@ async function STAGE_1() {
 
     console.log('Contract code => ',(await vm.stateManager.getContractCode(contractAddress)).toString('hex'))
 
+
 }
 
 
-// await STAGE_1()
+await STAGE_1()
 
 
 /*
@@ -384,4 +385,4 @@ let STAGE_2 = async() => {
 
 }
 
-await STAGE_2()
+// await STAGE_2()
