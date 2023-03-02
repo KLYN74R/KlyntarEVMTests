@@ -64,19 +64,19 @@ let deployContract=async(vm,senderPrivateKey,deploymentBytecode)=>{
 }
 
 
-async function setGreeting(vm,senderPrivateKey,contractAddress,greeting) {
+async function crossContractCallFromCallerToReceiver(vm,senderPrivateKey,callerContractAddress,receiverContractAddress) {
 
-    const data = encodeFunction('setGreeting', {
+    const data = encodeFunction('testCallFoo', {
     
-        types: ['string'],
-        values: [greeting],
+        types: ['address'],
+        values: [receiverContractAddress],
     
     })
 
-    console.log('DATA WHEN setGreeting() ',data)
+    console.log('DATA WHEN testCallFoo() ',data)
 
     const txData = {
-        to: contractAddress,
+        to: callerContractAddress,
         data,
         nonce: await getAccountNonce(vm, senderPrivateKey),
     }
@@ -85,39 +85,12 @@ async function setGreeting(vm,senderPrivateKey,contractAddress,greeting) {
 
     const setGreetingResult = await vm.runTx({ tx, block })
 
-    console.log('setGreetingGasSpent() => Gas used:',setGreetingResult.execResult.executionGasUsed.toString())
+    console.log('testCallFoo() => Gas used:',setGreetingResult.execResult.executionGasUsed.toString())
 
     if (setGreetingResult.execResult.exceptionError) {
 
         throw setGreetingResult.execResult.exceptionError
     }
-
-}
-
-
-async function getGreeting(vm, contractAddress, caller) {
-  
-    const sigHash = new Interface(['function greet()']).getSighash('greet')
-
-    const greetResult = await vm.evm.runCall({
-        to: contractAddress,
-        caller: caller,
-        origin: caller, // The tx.origin is also the caller here
-        data: Buffer.from(sigHash.slice(2), 'hex'),
-        block,
-    })
-
-    if (greetResult.execResult.exceptionError) {
-    
-        throw greetResult.execResult.exceptionError
-    
-    }
-
-    console.log('getGreeting() => Gas used:',greetResult.execResult.executionGasUsed.toString())
-
-    const results = AbiCoder.decode(['string'], greetResult.execResult.returnValue)
-
-    return results[0]
 
 }
 
@@ -177,6 +150,9 @@ async function main() {
     console.log('EOA account of caller contract ',await vm.stateManager.getAccount(contractAddressOfCaller))
 
     console.log('EOA account of receiver contract ',await vm.stateManager.getAccount(contractAddressOfReceiver))
+
+
+    await crossContractCallFromCallerToReceiver(vm,accountPk,contractAddressOfCaller,contractAddressOfReceiver.toString())
 
 
     // const greeting = await getGreeting(vm,contractAddressOfCaller,accountAddress)
