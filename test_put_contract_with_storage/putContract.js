@@ -44,10 +44,14 @@ const block = Block.fromBlockData({ header: { extraData: Buffer.alloc(97),number
 let deployContract=async(vm,senderPrivateKey,deploymentBytecode,greeting)=>{
     // Contracts are deployed by sending their deployment bytecode to the address 0
     // The contract params should be abi-encoded and appended to the deployment bytecode.
-    const data = encodeDeployment(deploymentBytecode.toString('hex'), {
+    const data = encodeDeployment(deploymentBytecode,{
         types: ['string'],
         values: [greeting],
     })
+
+    console.log('\n=================== DATA DEPLOY ===================\n')
+
+    console.log(data)
   
     const txData = {
         data,
@@ -184,6 +188,8 @@ async function STAGE_1() {
 
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
+    console.log('Contract code after upload => ',(await vm.stateManager.getContractCode(contractAddress)).toString('hex'))
+
     const greeting = await getGreeting(vm,contractAddress,accountAddress)
 
     console.log('Greeting after deploy => ', greeting)
@@ -289,9 +295,7 @@ let STAGE_2 = async() => {
     
     const trie = new Trie({
       
-        db:new LevelDB(new Level('DATABASES/PRE_DEPLOY_CONTRACT_2')),
-
-        useKeyHashing:true, // DAMN, delete it
+        db:new LevelDB(new Level('DATABASES/PRE_DEPLOY_CONTRACT_2'))
 
     })
 

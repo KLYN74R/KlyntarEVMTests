@@ -24,3 +24,6 @@ contract Caller {
         emit Response(success, data);
     }
 }
+
+
+// See https://solidity-by-example.org/function-selector/
