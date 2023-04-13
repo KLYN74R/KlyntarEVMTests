@@ -1,0 +1,186 @@
+<ref *1> {
+  programCounter: 303,
+  opCode: 241,
+  memory: Memory {
+    _store: <Buffer 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ... 430 more bytes>
+  },
+  memoryWordCount: 15n,
+  highestMemCost: 45n,
+  stack: Stack {
+    _store: [
+      2277138809n,
+      72n,
+      889173692994111245601811673942874403941880514008n,
+      0n,
+      0n,
+      889173692994111245601811673942874403941880514008n,
+      5000n,
+      0n,
+      424n
+    ],
+    _maxHeight: 1024
+  },
+  returnStack: Stack { _store: [], _maxHeight: 1023 },
+  code: <Buffer 60 80 60 40 52 60 04 36 10 61 00 29 57 60 00 35 60 e0 1c 80 63 87 ba 61 79 14 61 00 2e 57 80 63 ff 00 72 6c 14 61 00 4a 57 5b 60 00 80 fd 5b 61 00 48 ... 1398 more bytes>,
+  validJumps: Uint8Array(1448) [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    0, 0, 0, 0,
+    ... 1348 more items
+  ],
+  eei: EEI {
+    DEBUG: false,
+    _checkpointCount: 2,
+    _stateManager: DefaultStateManager {
+      DEBUG: false,
+      _debug: [Function],
+      _trie: [Trie],
+      _storageTries: [Object],
+      _prefixCodeHashes: true,
+      _cache: [Cache]
+    },
+    _common: Common {
+      _events: [Object: null prototype],
+      _eventsCount: 1,
+      _maxListeners: undefined,
+      _eips: [],
+      _customChains: [],
+      _chainParams: [Object],
+      DEFAULT_HARDFORK: 'london',
+      _hardfork: 'istanbul',
+      [Symbol(kCapture)]: false
+    },
+    _touched: Set(3) {
+      'be862ad9abfe6f22bcb087716c7d89a26051f74c',
+      '61de9dc6f6cff1df2809480882cfd3c2364b28f7',
+      '9bbfed6889322e016e0a02ee459d306fc19545d8'
+    },
+    _touchedStack: [ Set(0) {}, [Set] ],
+    _originalStorageCache: Map(0) {},
+    _accessedStorage: [ Map(0) {}, Map(0) {}, Map(0) {} ],
+    _accessedStorageReverted: [ Map(0) {} ],
+    _debug: [Function: debug] {
+      namespace: 'vm:state',
+      useColors: false,
+      color: 6,
+      extend: [Function: extend],
+      destroy: [Function: deprecated],
+      enabled: [Getter/Setter],
+      inspectOpts: {}
+    },
+    _blockchain: undefined,
+    txHash: undefined
+  },
+  env: {
+    address: Address {
+      buf: <Buffer 61 de 9d c6 f6 cf f1 df 28 09 48 08 82 cf d3 c2 36 4b 28 f7>
+    },
+    caller: Address {
+      buf: <Buffer be 86 2a d9 ab fe 6f 22 bc b0 87 71 6c 7d 89 a2 60 51 f7 4c>
+    },
+    callData: <Buffer 87 ba 61 79 00 00 00 00 00 00 00 00 00 00 00 00 9b bf ed 68 89 32 2e 01 6e 0a 02 ee 45 9d 30 6f c1 95 45 d8>,
+    callValue: 0n,
+    code: <Buffer 60 80 60 40 52 60 04 36 10 61 00 29 57 60 00 35 60 e0 1c 80 63 87 ba 61 79 14 61 00 2e 57 80 63 ff 00 72 6c 14 61 00 4a 57 5b 60 00 80 fd 5b 61 00 48 ... 1398 more bytes>,
+    isStatic: false,
+    depth: 0,
+    gasPrice: 1n,
+    origin: Address {
+      buf: <Buffer be 86 2a d9 ab fe 6f 22 bc b0 87 71 6c 7d 89 a2 60 51 f7 4c>
+    },
+    block: Block {
+      transactions: [],
+      uncleHeaders: [],
+      txTrie: [Trie],
+      header: [BlockHeader],
+      _common: [Common]
+    },
+    contract: Account {
+      nonce: 1n,
+      balance: 0n,
+      storageRoot: <Buffer 56 e8 1f 17 1b cc 55 a6 ff 83 45 e6 92 c0 f8 6e 5b 48 e0 1b 99 6c ad c0 01 62 2f b5 e3 63 b4 21>,
+      codeHash: <Buffer 1a b7 7b 6d 5a 79 cc 6f 27 53 9f e1 2b 8a 55 3e e8 c4 7b 61 65 5f 06 c8 df d1 46 be 53 d7 b6 a2>,
+      virtual: false
+    },
+    codeAddress: Address {
+      buf: <Buffer 61 de 9d c6 f6 cf f1 df 28 09 48 08 82 cf d3 c2 36 4b 28 f7>
+    },
+    gasRefund: 0n,
+    txHash: undefined
+  },
+  shouldDoJumpAnalysis: false,
+  interpreter: Interpreter {
+    opDebuggers: {},
+    _evm: EVM {
+      _isInitialized: false,
+      DEBUG: false,
+      events: [AsyncEventEmitter],
+      _optsCached: [Object],
+      eei: [EEI],
+      _transientStorage: [TransientStorage],
+      _common: [Common],
+      _allowUnlimitedContractSize: false,
+      _customOpcodes: [],
+      _customPrecompiles: undefined,
+      _opcodes: [Map],
+      _dynamicGasHandlers: [Map],
+      _handlers: [Map],
+      _precompiles: [Map],
+      _emit: [Function: bound ],
+      _block: [Block],
+      _tx: [Object]
+    },
+    _eei: EEI {
+      DEBUG: false,
+      _checkpointCount: 2,
+      _stateManager: [DefaultStateManager],
+      _common: [Common],
+      _touched: [Set],
+      _touchedStack: [Array],
+      _originalStorageCache: Map(0) {},
+      _accessedStorage: [Array],
+      _accessedStorageReverted: [Array],
+      _debug: [Function],
+      _blockchain: undefined,
+      txHash: undefined
+    },
+    _common: Common {
+      _events: [Object: null prototype],
+      _eventsCount: 1,
+      _maxListeners: undefined,
+      _eips: [],
+      _customChains: [],
+      _chainParams: [Object],
+      DEFAULT_HARDFORK: 'london',
+      _hardfork: 'istanbul',
+      [Symbol(kCapture)]: false
+    },
+    _runState: [Circular *1],
+    _env: {
+      address: [Address],
+      caller: [Address],
+      callData: <Buffer 87 ba 61 79 00 00 00 00 00 00 00 00 00 00 00 00 9b bf ed 68 89 32 2e 01 6e 0a 02 ee 45 9d 30 6f c1 95 45 d8>,
+      callValue: 0n,
+      code: <Buffer 60 80 60 40 52 60 04 36 10 61 00 29 57 60 00 35 60 e0 1c 80 63 87 ba 61 79 14 61 00 2e 57 80 63 ff 00 72 6c 14 61 00 4a 57 5b 60 00 80 fd 5b 61 00 48 ... 1398 more bytes>,
+      isStatic: false,
+      depth: 0,
+      gasPrice: 1n,
+      origin: [Address],
+      block: [Block],
+      contract: [Account],
+      codeAddress: [Address],
+      gasRefund: 0n,
+      txHash: undefined
+    },
+    _result: { logs: [Array], returnValue: undefined, selfdestruct: {} }
+  },
+  gasRefund: 0n,
+  gasLeft: 1971843n,
+  returnBuffer: <Buffer 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7c>,
+  messageGasLimit: undefined
+}
