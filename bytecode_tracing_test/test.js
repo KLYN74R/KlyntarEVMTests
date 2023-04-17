@@ -21,6 +21,10 @@ import Web3 from 'web3'
 let web3 = new Web3();
 
 
+// To test decoder
+
+import { Interface, defaultAbiCoder as AbiCoder } from '@ethersproject/abi'
+
 
 
 global.__dirname = await import('path').then(async mod=>
@@ -82,6 +86,29 @@ async function crossContractCallFromCallerToReceiver(vm,senderPrivateKey,callerC
         values: [receiverContractAddress],
     
     })
+
+    console.log('\n=========== Just for proof ============\n')
+
+    let dataForProof = encodeFunction('foo', {
+
+        types: ['string','uint256'],
+        values: ["call foo",123],
+    
+    })
+
+    console.log(dataForProof)
+
+    console.log('And decoded version')
+
+    // Slice the first 4 bytes(function signature)
+
+    dataForProof = dataForProof.slice(10)
+
+    console.log('And decoded version')
+
+    console.log(dataForProof)
+
+    console.log(AbiCoder.decode(['string','uint256'],'0x'+dataForProof))
 
     console.log('DATA WHEN testCallFoo() ',data)
 

@@ -9,6 +9,7 @@ export const encodeFunction = (method,params) => {
   const encodedArgs = AbiCoder.encode(parameters, params?.values ?? [])
 
   return signatureHash + encodedArgs.slice(2)
+
 }
 
 export const encodeDeployment = (bytecode,params) => {
