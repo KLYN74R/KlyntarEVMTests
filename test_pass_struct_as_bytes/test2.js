@@ -82,6 +82,24 @@ let deployContract=async(vm,senderPrivateKey,deploymentBytecode)=>{
 
 async function createUserFromBytes(vm,senderPrivateKey,contractAddress,encodedUserAsBytes) {
 
+    //Try to get values like this
+    console.log('Encoded via AbiCoder => ',AbiCoder.decode([{
+        type:"struct",
+        components:[
+            {
+                internalType: "uint256",
+                name: "age",
+                type: "uint256"
+            },
+            {
+                internalType: "string",
+                name: "name",
+                type: "string"
+            }
+        ]   
+    }],encodedUserAsBytes))
+
+
     const data = encodeFunction('createUserFromBytes',{
     
         types: ['bytes'],
