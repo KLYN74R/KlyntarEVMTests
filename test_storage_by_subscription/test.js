@@ -147,7 +147,7 @@ async function STAGE_1() {
     
     const trie = new Trie({
       
-        db:new LevelDB(new Level('DATABASES/PRE_DEPLOY_CONTRACT')),
+        db:new LevelDB(new Level('DATABASES/STORAGE_SUBSCRIPTION')),
 
         // useKeyHashing:true
 
@@ -158,17 +158,51 @@ async function STAGE_1() {
 
     // Create the VM instance
     const vm = await VM.create({common,stateManager})
-  
-  
+
+    
+    /*
+    
+        Should be nothind
+
+        
+        
+        But, if you'll set this state root - you'll get the state after Stage 4(when contract is deleted)
+
+        await vm.stateManager.setStateRoot(Buffer.from('a50e5b995e4ca4b3348bdaf0d36e5c23d75872824fd2b2666e799721b4376f1d','hex'))
+    
+    */
+    trie.createReadStream().on('data',data=>console.log('[Stage 0 - No ops with DB]: Read stream of trie => ',data))
+
+
     //-------------------- Put initial account --------------------
 
-    console.log('Account => ', accountAddress.toString())
+    console.log('User account => ', accountAddress.toString())
 
     await insertAccount(vm,accountAddress)
   
     console.log('The most init state root => ',(await vm.stateManager.getStateRoot()).toString('hex'))
   
     const creatorAccount = await vm.stateManager.getAccount(accountAddress)
+
+    /*
+    
+    Try to get values after account inserted
+    
+    Should be:
+
+    [Stage 1 - User account inserted]: Read stream of strie =>  {
+        
+        key: <Buffer be 86 2a d9 ab fe 6f 22 bc b0 87 71 6c 7d 89 a2 60 51 f7 4c>,
+        value: <Buffer f8 4c 80 88 0d e0 b6 b3 a7 64 00 00 a0 56 e8 1f 17 1b cc 55 a6 ff 83 45 e6 92 c0 f8 6e 5b 48 e0 1b 99 6c ad c0 01 62 2f b5 e3 63 b4 21 a0 c5 d2 46 01 ... 28 more bytes>
+    }
+
+
+    */
+    await new Promise(resolve => {
+
+        trie.createReadStream().on('data',data=>console.log('[Stage 1 - User account inserted]: Read stream of trie => ',data)).on('end',resolve)
+    
+    }).catch(e=>console.log(e))
 
 
     //-------------------- Deploy contract --------------------
@@ -189,6 +223,32 @@ async function STAGE_1() {
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
     console.log('Contract code after upload => ',(await vm.stateManager.getContractCode(contractAddress)).toString('hex'))
+
+
+    /*
+    
+    [Stage 2 - Contract inserted]: Read stream of trie =>  {
+        key: <Buffer 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00>,
+        value: <Buffer f8 47 80 83 04 5d e6 a0 56 e8 1f 17 1b cc 55 a6 ff 83 45 e6 92 c0 f8 6e 5b 48 e0 1b 99 6c ad c0 01 62 2f b5 e3 63 b4 21 a0 c5 d2 46 01 86 f7 23 3c 92 ... 23 more bytes>
+    }
+
+    [Stage 2 - Contract inserted]: Read stream of trie =>  {
+        key: <Buffer 61 de 9d c6 f6 cf f1 df 28 09 48 08 82 cf d3 c2 36 4b 28 f7>,
+        value: <Buffer f8 44 01 80 a0 f5 da 7b c1 46 9e d3 65 62 83 02 cf a9 e4 28 45 59 69 56 80 36 ab c1 f8 44 bf 04 93 32 1f 7d 41 a0 7d 19 8a fe 99 73 56 3f 22 c6 64 a9 ... 20 more bytes>
+    }
+
+    [Stage 2 - Contract inserted]: Read stream of trie =>  {
+        key: <Buffer be 86 2a d9 ab fe 6f 22 bc b0 87 71 6c 7d 89 a2 60 51 f7 4c>,
+        value: <Buffer f8 4c 01 88 0d e0 b6 b3 a7 5f a2 1a a0 56 e8 1f 17 1b cc 55 a6 ff 83 45 e6 92 c0 f8 6e 5b 48 e0 1b 99 6c ad c0 01 62 2f b5 e3 63 b4 21 a0 c5 d2 46 01 ... 28 more bytes>
+    }
+    
+    
+    */
+    await new Promise(resolve => {
+
+        trie.createReadStream().on('data',data=>console.log('[Stage 2 - Contract inserted]: Read stream of trie => ',data)).on('end',resolve)
+    
+    })
 
     const greeting = await getGreeting(vm,contractAddress,accountAddress)
 
@@ -230,6 +290,47 @@ async function STAGE_1() {
     console.log('Contract code => ',(await vm.stateManager.getContractCode(contractAddress)).toString('hex'))
 
 
+    //_________________ Check the raw values from LevelDB _________________
+
+    console.log('State root before stage 3 => ',(await vm.stateManager.getStateRoot()).toString('hex'))
+
+
+    await new Promise(resolve => {
+
+        trie.createReadStream().on('data',data=>console.log('[Stage 3 - Before delete]: Read stream of trie => ',data)).on('end',resolve)
+    
+    })
+
+
+    //_________________ Now try to delete account _________________
+    
+    await vm.stateManager.clearContractStorage(contractAddress)
+
+    await vm.stateManager.deleteAccount(contractAddress)
+
+    console.log('_______________After delete_______________')
+
+    console.log('EOA account of contract => ',await vm.stateManager.getAccount(contractAddress))
+
+    console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
+
+    console.log('Contract code => ',(await vm.stateManager.getContractCode(contractAddress)).toString('hex'))
+
+
+    console.log('State root before after delete => ',(await vm.stateManager.getStateRoot()).toString('hex'))
+
+    await vm.stateManager.setStateRoot(Buffer.from('a50e5b995e4ca4b3348bdaf0d36e5c23d75872824fd2b2666e799721b4376f1d','hex'))
+    
+    await new Promise(resolve => {
+
+        trie.createReadStream().on('data',data=>console.log('[Stage 4 - After delete]: Read stream of trie => ',data)).on('end',resolve)
+    
+    })
+
+
+    // So, we'll do this to implement the subscription model for KLY storage. It's easier for WASM, but now we can provide it for KLY-EVM too
+
+
 }
 
 
@@ -246,11 +347,13 @@ await STAGE_1()
 [+]______________________Contract state
 
 {
-  '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563': '81d1',
-  '510e4e770828ddbf7f7b00ab00a9f6adaf81c0dc9cc85f1f8249c256942d61d9': 'a048656c6c6f48656c6c6f204b4c594e54415248656c6c6f204b4c594e54415248',
-  '63d75db57ae45c3799740c3cd8dcee96a498324843d79ae390adc81d74b52f13': 'a04c594e54415248656c6c6f204b4c594e54415248656c6c6f204b4c594e544152',
-  '68ebfc8da80bd809b12832608f406ef96007b3a567d97edcfc62f0f6f6a6d8fa': 'a0204b4c594e544152000000000000000000000000000000000000000000000000',
-  '6c13d8c1c5df666ea9ca2a428504a3776c8ca01021c3a1524ca7d765f600979a': 'a0656c6c6f204b4c594e54415248656c6c6f204b4c594e54415248656c6c6f204b'
+
+    '0000000000000000000000000000000000000000000000000000000000000000': '81d1',
+    '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563': 'a048656c6c6f48656c6c6f204b4c594e54415248656c6c6f204b4c594e54415248',
+    '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e564': 'a0656c6c6f204b4c594e54415248656c6c6f204b4c594e54415248656c6c6f204b',
+    '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e566': 'a0204b4c594e544152000000000000000000000000000000000000000000000000',
+    '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e565': 'a04c594e54415248656c6c6f204b4c594e54415248656c6c6f204b4c594e544152'
+    
 }
 
 
@@ -261,133 +364,4 @@ await STAGE_1()
 608060405234801561001057600080fd5b50600436106100365760003560e01c8063a41368621461003b578063cfae321714610050575b600080fd5b61004e610049366004610126565b61006e565b005b61005861007e565b60405161006591906101d7565b60405180910390f35b600061007a82826102ae565b5050565b60606000805461008d90610225565b80601f01602080910402602001604051908101604052809291908181526020018280546100b990610225565b80156101065780601f106100db57610100808354040283529160200191610106565b820191906000526020600020905b8154815290600101906020018083116100e957829003601f168201915b5050505050905090565b634e487b7160e01b600052604160045260246000fd5b60006020828403121561013857600080fd5b813567ffffffffffffffff8082111561015057600080fd5b818401915084601f83011261016457600080fd5b81358181111561017657610176610110565b604051601f8201601f19908116603f0116810190838211818310171561019e5761019e610110565b816040528281528760208487010111156101b757600080fd5b826020860160208301376000928101602001929092525095945050505050565b600060208083528351808285015260005b81811015610204578581018301518582016040015282016101e8565b506000604082860101526040601f19601f8301168501019250505092915050565b600181811c9082168061023957607f821691505b60208210810361025957634e487b7160e01b600052602260045260246000fd5b50919050565b601f8211156102a957600081815260208120601f850160051c810160208610156102865750805b601f850160051c820191505b818110156102a557828155600101610292565b5050505b505050565b815167ffffffffffffffff8111156102c8576102c8610110565b6102dc816102d68454610225565b8461025f565b602080601f83116001811461031157600084156102f95750858301515b600019600386901b1c1916600185901b1785556102a5565b600085815260208120601f198616915b8281101561034057888601518255948401946001909101908401610321565b508582101561035e5787850151600019600388901b60f8161c191681555b5050505050600190811b0190555056fea26469706673582212207240ad758772a27912da8339241b6ba9ecaaeffbe8460ca0ef50dc4a301f5fb764736f6c63430008110033
 
 
----------------------------------------------------------In the stage 2---------------------------------------------------------
-
-We try to do predeployment to check the state of contract
-
-
 */
-
-
-let STAGE_2 = async() => {
-
-
-    let contractStorage = {
-
-      '0000000000000000000000000000000000000000000000000000000000000000': '81d1',
-      '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563': 'a048656c6c6f48656c6c6f204b4c594e54415248656c6c6f204b4c594e54415248',
-      '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e564': 'a0656c6c6f204b4c594e54415248656c6c6f204b4c594e54415248656c6c6f204b',
-      '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e566': 'a0204b4c594e544152000000000000000000000000000000000000000000000000',
-      '290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e565': 'a04c594e54415248656c6c6f204b4c594e54415248656c6c6f204b4c594e544152'
-    
-    }
-
-
-    let contractCode = '608060405234801561001057600080fd5b50600436106100365760003560e01c8063a41368621461003b578063cfae321714610050575b600080fd5b61004e610049366004610126565b61006e565b005b61005861007e565b60405161006591906101d7565b60405180910390f35b600061007a82826102ae565b5050565b60606000805461008d90610225565b80601f01602080910402602001604051908101604052809291908181526020018280546100b990610225565b80156101065780601f106100db57610100808354040283529160200191610106565b820191906000526020600020905b8154815290600101906020018083116100e957829003601f168201915b5050505050905090565b634e487b7160e01b600052604160045260246000fd5b60006020828403121561013857600080fd5b813567ffffffffffffffff8082111561015057600080fd5b818401915084601f83011261016457600080fd5b81358181111561017657610176610110565b604051601f8201601f19908116603f0116810190838211818310171561019e5761019e610110565b816040528281528760208487010111156101b757600080fd5b826020860160208301376000928101602001929092525095945050505050565b600060208083528351808285015260005b81811015610204578581018301518582016040015282016101e8565b506000604082860101526040601f19601f8301168501019250505092915050565b600181811c9082168061023957607f821691505b60208210810361025957634e487b7160e01b600052602260045260246000fd5b50919050565b601f8211156102a957600081815260208120601f850160051c810160208610156102865750805b601f850160051c820191505b818110156102a557828155600101610292565b5050505b505050565b815167ffffffffffffffff8111156102c8576102c8610110565b6102dc816102d68454610225565b8461025f565b602080601f83116001811461031157600084156102f95750858301515b600019600386901b1c1916600185901b1785556102a5565b600085815260208120601f198616915b8281101561034057888601518255948401946001909101908401610321565b508582101561035e5787850151600019600388901b60f8161c191681555b5050505050600190811b0190555056fea26469706673582212207240ad758772a27912da8339241b6ba9ecaaeffbe8460ca0ef50dc4a301f5fb764736f6c63430008110033'
-
-    //-------------------- Preparations --------------------
-
-  
-
-    const accountPk = Buffer.from('e331b6d69882b4cb4ea581d88e0b604039a3de5967688d3dcffdd2270c0fd109','hex')
-
-    const accountAddress = Address.fromPrivateKey(accountPk)
-
-    
-    const trie = new Trie({
-      
-        db:new LevelDB(new Level('DATABASES/PRE_DEPLOY_CONTRACT_2'))
-
-    })
-
-    const stateManager = new DefaultStateManager({trie})
-
-
-    // Create the VM instance
-    const vm = await VM.create({common,stateManager})
-  
-  
-    //-------------------- Put initial account --------------------
-
-    console.log('Account => ', accountAddress.toString())
-
-    await vm.stateManager.checkpoint()
-
-    await insertAccount(vm,accountAddress)
-  
-    console.log('The most init state root => ',(await vm.stateManager.getStateRoot()).toString('hex'))
-
-
-    //-------------------- Deploy contract(pre-deployment imitation) --------------------
-    
-    // * using contract code + storage from STAGE_1
-
-    console.log('Deploying the contract...')
-
-    const contractAddress = Address.fromString('0x61de9dc6f6cff1df2809480882cfd3c2364b28f7')
-    
-    await insertAccount(vm,contractAddress)
-
-    await vm.stateManager.putContractCode(contractAddress,Buffer.from(contractCode,'hex'))
-
-    console.log('State of contract before manual setup => ',await vm.stateManager.dumpStorage(contractAddress))
-
-    console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
-
-    for(let [key,value] of Object.entries(contractStorage)){
-
-        // console.log(`Put to contract storage => KEY: ${key} : VALUE: ${value}`)
-
-        value = Buffer.from(rlp.decode(`0x${value}`))
-
-        await vm.stateManager.putContractStorage(contractAddress,Buffer.from(key,'hex'),value)
-
-        // console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
-
-        console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
-
-    }
-  
-
-    // await vm.stateManager.modifyAccountFields(contractAddress,{nonce:BigInt(1),storageRoot:Buffer.from('d759ece9dd264f95eb0fcf763b32e4df9d2be1642324728245fa57cf1a95b8b2','hex')})
-
-    console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
-
-    console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
-
-    await vm.stateManager.commit()
-    
-    const greeting = await getGreeting(vm,contractAddress,accountAddress)
-
-    console.log('Greeting after deploy => ',greeting)
-
-    console.log('Changing greeting...')
-
-    let SECOND_GREETING = 'Hello from STAGE_2'
-
-    await setGreeting(vm,accountPk,contractAddress,SECOND_GREETING)
-
-    console.log('State root after set => ', (await vm.stateManager.getStateRoot()).toString('hex'))
-
-    const greeting2 = await getGreeting(vm, contractAddress, accountAddress)
-
-    console.log('Greeting => ', greeting2)
-
-    console.log('State root after second getGreeting() (should be the same as before get function call)=> ', (await vm.stateManager.getStateRoot()).toString('hex'))
-
-
-    if (greeting2 !== SECOND_GREETING) throw new Error(`second greeting not equal, received ${greeting2}, expected ${SECOND_GREETING}`)
-
-
-    const createdContractAccount = await vm.stateManager.getAccount(contractAddress)
-
-    console.log('EOA account of contract ',createdContractAccount)
-
-    console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
-
-    console.log('Contract code => ',(await vm.stateManager.getContractCode(contractAddress)).toString('hex'))
-
-
-}
-
-// await STAGE_2()
