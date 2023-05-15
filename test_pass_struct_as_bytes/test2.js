@@ -282,7 +282,7 @@ async function main() {
 
     console.log('State root after deployment contract => ', (await vm.stateManager.getStateRoot()).toString('hex'))
 
-    console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
+    console.log('Account of contract ',await vm.stateManager.getAccount(contractAddress))
 
 
     let encodedUser = await callCreateUserAndEncode(vm,accountPk,contractAddress,'Vlad Chernenko',20);

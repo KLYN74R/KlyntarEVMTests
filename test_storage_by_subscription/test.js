@@ -218,7 +218,7 @@ async function STAGE_1() {
 
     console.log('State root after deployment => ', (await vm.stateManager.getStateRoot()).toString('hex'))
 
-    console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
+    console.log('Account of contract ',await vm.stateManager.getAccount(contractAddress))
 
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
@@ -267,7 +267,7 @@ async function STAGE_1() {
 
     console.log('State root after set => ', (await vm.stateManager.getStateRoot()).toString('hex'))
 
-    console.log('EOA account of contract after setGreet() => ',await vm.stateManager.getAccount(contractAddress))
+    console.log('Account of contract after setGreet() => ',await vm.stateManager.getAccount(contractAddress))
 
     console.log('State of contract after setGreet() => ',await vm.stateManager.dumpStorage(contractAddress))
 
@@ -283,7 +283,7 @@ async function STAGE_1() {
 
     const createdContractAccount = await vm.stateManager.getAccount(contractAddress)
 
-    console.log('EOA account of contract ',createdContractAccount)
+    console.log('Account of contract ',createdContractAccount)
 
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
@@ -310,7 +310,7 @@ async function STAGE_1() {
 
     console.log('_______________After delete_______________')
 
-    console.log('EOA account of contract => ',await vm.stateManager.getAccount(contractAddress))
+    console.log('Account of contract => ',await vm.stateManager.getAccount(contractAddress))
 
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 

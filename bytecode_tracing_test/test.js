@@ -223,9 +223,9 @@ async function main() {
     console.log('State root after deployment 2 contracts => ', (await vm.stateManager.getStateRoot()).toString('hex'))
 
 
-    console.log('EOA account of caller contract ',await vm.stateManager.getAccount(contractAddressOfCaller))
+    console.log('Account of caller contract ',await vm.stateManager.getAccount(contractAddressOfCaller))
 
-    console.log('EOA account of receiver contract ',await vm.stateManager.getAccount(contractAddressOfReceiver))
+    console.log('Account of receiver contract ',await vm.stateManager.getAccount(contractAddressOfReceiver))
 
 
     await crossContractCallFromCallerToReceiver(vm,accountPk,contractAddressOfCaller,contractAddressOfReceiver.toString())
@@ -260,7 +260,7 @@ async function main() {
 
     // const createdContractAccount = await vm.stateManager.getAccount(contractAddressOfCaller)
 
-    // console.log('EOA account of contract ',createdContractAccount)
+    // console.log('Account of contract ',createdContractAccount)
 
     // console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddressOfCaller))
 

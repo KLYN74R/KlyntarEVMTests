@@ -184,7 +184,7 @@ async function STAGE_1() {
 
     console.log('State root after deployment => ', (await vm.stateManager.getStateRoot()).toString('hex'))
 
-    console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
+    console.log('Account of contract ',await vm.stateManager.getAccount(contractAddress))
 
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
@@ -207,7 +207,7 @@ async function STAGE_1() {
 
     console.log('State root after set => ', (await vm.stateManager.getStateRoot()).toString('hex'))
 
-    console.log('EOA account of contract after setGreet() => ',await vm.stateManager.getAccount(contractAddress))
+    console.log('Account of contract after setGreet() => ',await vm.stateManager.getAccount(contractAddress))
 
     console.log('State of contract after setGreet() => ',await vm.stateManager.dumpStorage(contractAddress))
 
@@ -223,7 +223,7 @@ async function STAGE_1() {
 
     const createdContractAccount = await vm.stateManager.getAccount(contractAddress)
 
-    console.log('EOA account of contract ',createdContractAccount)
+    console.log('Account of contract ',createdContractAccount)
 
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
@@ -332,7 +332,7 @@ let STAGE_2 = async() => {
 
     console.log('State of contract before manual setup => ',await vm.stateManager.dumpStorage(contractAddress))
 
-    console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
+    console.log('Account of contract ',await vm.stateManager.getAccount(contractAddress))
 
     for(let [key,value] of Object.entries(contractStorage)){
 
@@ -342,7 +342,7 @@ let STAGE_2 = async() => {
 
         await vm.stateManager.putContractStorage(contractAddress,Buffer.from(key,'hex'),value)
 
-        // console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
+        // console.log('Account of contract ',await vm.stateManager.getAccount(contractAddress))
 
         console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
@@ -351,7 +351,7 @@ let STAGE_2 = async() => {
 
     // await vm.stateManager.modifyAccountFields(contractAddress,{nonce:BigInt(1),storageRoot:Buffer.from('d759ece9dd264f95eb0fcf763b32e4df9d2be1642324728245fa57cf1a95b8b2','hex')})
 
-    console.log('EOA account of contract ',await vm.stateManager.getAccount(contractAddress))
+    console.log('Account of contract ',await vm.stateManager.getAccount(contractAddress))
 
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
@@ -381,7 +381,7 @@ let STAGE_2 = async() => {
 
     const createdContractAccount = await vm.stateManager.getAccount(contractAddress)
 
-    console.log('EOA account of contract ',createdContractAccount)
+    console.log('Account of contract ',createdContractAccount)
 
     console.log('State of contract => ',await vm.stateManager.dumpStorage(contractAddress))
 
