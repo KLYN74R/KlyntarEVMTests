@@ -256,6 +256,7 @@ async function main() {
 
     // Create the VM instance
     const vm = await VM.create({common,stateManager,evm})
+
   
   
     //-------------------- Put initial account --------------------

@@ -65,9 +65,9 @@ let deployContract=async(vm,senderPrivateKey,deploymentBytecode)=>{
         gasLimit:1000000
     }
 
-    const tx = Transaction.fromTxData(buildTransaction(txData), { common }).sign(senderPrivateKey)
+    const tx = Transaction.fromTxData(buildTransaction(txData), { common })//.sign(senderPrivateKey)
 
-    const deploymentResult = await vm.runTx({ tx, block })
+    const deploymentResult = await vm.runTx({tx,block})
 
     if (deploymentResult.execResult.exceptionError) {
         throw deploymentResult.execResult.exceptionError
@@ -98,7 +98,7 @@ async function createUserFromBytes(vm,senderPrivateKey,contractAddress,encodedUs
         nonce: await getAccountNonce(vm, senderPrivateKey),
     }
 
-    const tx = Transaction.fromTxData(buildTransaction(txData), { common }).sign(senderPrivateKey)
+    const tx = Transaction.fromTxData(buildTransaction(txData), { common })//.sign(senderPrivateKey)
 
     const executionResults = await vm.runTx({ tx, block })
 
@@ -157,7 +157,7 @@ async function callCreateUserAndEncode(vm,senderPrivateKey,contractAddress,userN
         nonce: await getAccountNonce(vm, senderPrivateKey),
     }
 
-    const tx = Transaction.fromTxData(buildTransaction(txData), { common }).sign(senderPrivateKey)
+    const tx = Transaction.fromTxData(buildTransaction(txData), { common })//.sign(senderPrivateKey)
 
     const executionResults = await vm.runTx({ tx, block })
 
@@ -223,7 +223,9 @@ async function main() {
 
     const accountAddress = Address.fromPrivateKey(accountPk)
 
+
     const stateManager = new DefaultStateManager({trie})
+
 
     // let evm = new EVM()
 
@@ -240,7 +242,6 @@ async function main() {
     const vm = await VM.create({common,stateManager,evm})
 
   
-  
     //-------------------- Put initial account --------------------
 
     console.log('Account => ', accountAddress.toString())
@@ -249,6 +250,7 @@ async function main() {
   
     console.log('The most init state root => ',(await vm.stateManager.getStateRoot()).toString('hex'))
 
+    console.log('Init account state ',await vm.stateManager.getAccount(accountAddress))
 
     //-------------------- Deploy contrac --------------------
 
@@ -261,6 +263,7 @@ async function main() {
 
     console.log('Contract address => ', contractAddress.toString())
 
+    console.log('State of deployer account => ',await vm.stateManager.getAccount(accountAddress))
 
     console.log('State root after deployment contract => ', (await vm.stateManager.getStateRoot()).toString('hex'))
 
@@ -270,8 +273,11 @@ async function main() {
 
     await createUserFromBytes(vm,accountPk,contractAddress,encodedUser);
 
+    console.log('State of deployer account after all => ',await vm.stateManager.getAccount(accountAddress))
 
 }
+
+
 
 
 await main()
