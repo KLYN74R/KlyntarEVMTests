@@ -62,12 +62,12 @@ let deployContract=async(vm,senderPrivateKey,deploymentBytecode)=>{
     const txData = {
         data:`0x${deploymentBytecode}`,
         nonce: await getAccountNonce(vm,senderPrivateKey),
-        gasLimit:1000000
+        gasLimit:1_000
     }
 
-    const tx = Transaction.fromTxData(buildTransaction(txData), { common })//.sign(senderPrivateKey)
+    const tx = Transaction.fromTxData(buildTransaction(txData),{common})//.sign(senderPrivateKey)
 
-    const deploymentResult = await vm.runTx({tx,block})
+    const deploymentResult = await vm.runTx({tx,block,skipBalance:true})
 
     if (deploymentResult.execResult.exceptionError) {
         throw deploymentResult.execResult.exceptionError
@@ -259,7 +259,10 @@ async function main() {
     console.log('Deploying the contract...')
    
 
-    const contractAddress = await deployContract(vm,accountPk,CONTRACT_BYTECODE)
+    let vmCopy = await vm.copy()
+
+    const contractAddress = await deployContract(vmCopy,accountPk,CONTRACT_BYTECODE)
+
 
     console.log('Contract address => ', contractAddress.toString())
 
